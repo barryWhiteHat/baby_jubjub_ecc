@@ -1,7 +1,7 @@
 # baby\_jubjub\_ecc
 
-This repository contains zksnark constarint systems for [twisted ewards curve](https://github.com/barryWhiteHat/baby_jubjub) 
-point addion, point multiplicaion, eddsa signature verificaion and pedersen commiments. As well as python scripts for
+This repository contains zksnark constarint systems for [twisted edwards curve](https://github.com/barryWhiteHat/baby_jubjub) 
+point addition, point multiplication, eddsa signature verification and pedersen commitments. As well as python scripts for
 test case generation. 
 
 This is a naive implmentaion and considerable optimizations are possible. 
@@ -15,7 +15,7 @@ get dependencies `git submodule update --init --recursive`
 `cmake .. && make`
 
 ### Running the tests
-Start your prefered ethereum node, `cd tests` and run `python3 test*` will generate all the 
+Start your preferred ethereum node, `cd tests` and run `python3 test*` will generate all the 
 test variables that you can confirm in `src/main.cpp`
 
 You can run the test after building by 
