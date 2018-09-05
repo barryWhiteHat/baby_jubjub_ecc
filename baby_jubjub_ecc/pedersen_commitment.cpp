@@ -53,9 +53,9 @@ template<typename FieldT>
     jubjub_isOnCurve2.reset( new isOnCurve <FieldT> (pb, H_x, H_y, a, d, "Confirm x, y is on the twiseted edwards curve"));
 
     // base * m
-    jubjub_pointMultiplication_lhs.reset( new pointMultiplication <FieldT> (pb, a, d, base_x, base_y, m, lhs_x, lhs_y, " lhs check "));
+    jubjub_pointMultiplication_lhs.reset( new pointMultiplication <FieldT> (pb, a, d, base_x, base_y, m, lhs_x, lhs_y, " lhs check ", 253));
     // h*r
-    jubjub_pointMultiplication_rhs.reset( new pointMultiplication <FieldT> (pb, a, d, H_x, H_y, r, rhs_x, rhs_y, "rhs mul "));
+    jubjub_pointMultiplication_rhs.reset( new pointMultiplication <FieldT> (pb, a, d, H_x, H_y, r, rhs_x, rhs_y, "rhs mul ", 253));
     jubjub_pointAddition.reset( new pointAddition <FieldT> (pb, a, d, rhs_x[252], rhs_y[252] , lhs_x[252] , lhs_y[252], res_x, res_y , "rhs addition"));
 
 
