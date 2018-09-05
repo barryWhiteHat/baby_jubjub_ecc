@@ -4,15 +4,37 @@
 import hashlib
 import pdb
 from sapling_jubjub import *
+import codecs 
 
+
+def hexToBinary(hexString):
+  out = [ int(x) for x in bin(int(hexString, 16))[2:].zfill(256)]
+  return(out)
+
+def hashPadded(left, right):
+  
+  x1 = int(left , 16).to_bytes(32, "big")
+  x2 = int(right , 16).to_bytes(32, "big")
+
+  data = x1 + x2
+  answer = hashlib.sha256(data).hexdigest()
+  
+  return(answer)
 
 
 def H(m):
-  hashId = hashlib.sha256()
-  hashId.update(repr(m).encode('utf-8'))
-  return hashId.hexdigest()
+  size = len(m)
+  # if m is too long break it into two hashes
 
-#  return hashlib.sha512(m).digest()
+  if(size > 128):
+    m = H(m[0:size//2]) + H(m[size//2:])
+  #pad m if its too short
+  #if len(m) != 128:
+    #pdb.set_trace()
+  m = m + "0" *(128 - len(m)) 
+
+  return hashPadded(m[:64], m[64:])
+
 
 def xrecover(y):
   xx = (y*y-1) * inv(d*y*y+1)
@@ -130,13 +152,22 @@ def encodeint(y):
 
 def encodepoint(P):
   x = P[0]
-  y = P[1]
-  bits = [(y >> i) & 1 for i in range(b - 1)] + [x & 1]
-  return ''.join([chr(sum([bits[i * 8 + j] << j for j in range(8)])) for i in range(int(b//8))])
+  y = P[1] 
+  
+  x = hex(int(''.join(str(e) for e in hexToBinary(hex(x))[::-1]),2))
+  y = hex(int(''.join(str(e) for e in hexToBinary(hex(y))[::-1]),2))
+  out = hashPadded(x,y)
 
+  return(out)
+  '''
+  bits = [(y >> i) & 1 for i in range(b - 1)] + [x & 1]
+  out = ''.join([chr(sum([bits[i * 8 + j] << j for j in range(8)])) for i in range(int(b//8))])
+  print(" out " , len(out), out)
+  return( codecs.encode(codecs.encode(out, "utf-8"), "hex_codec").decode("utf-8")  )
+  '''
 def bit(h,i):
-  out = (ord(h[int(i/8)]) >> (i%8)) & 1 
-  return out
+  out = bin(int(h,16))[2:].zfill(256)[i]
+  return int(out)
 
 def publickey(sk):
   h = H(sk)
@@ -145,24 +176,42 @@ def publickey(sk):
   return A
 
 def Hint(m):
+
+  #this is engineered to match the libsnark
+  #packing gagdget which willl convert h  
+  # to a field element
   h = H(m)
-  return sum(2**i * bit(h,i) for i in range(2*b))
+  tmp = []
+  tmp2 = []
+  out = 0
+  size = 2*b + 1
+  for i in range(size)[::-1]:
+
+    tmp.append(bit(h,i))
+    tmp3 = str(bit(h,i)) + "+ " + str(out) + "+ " + str(out) + "=  " 
+    out = out + out + bit(h, i)
+    #print (tmp3 + str(out))
+
+  #reverse endineess and return
+
+  binary = bin(out)[2:][::-1].ljust(size,"0")
+  binary = binary[:size]
+
+  return(int(binary,2))
+
+
 
 def signature(m,sk,pk):
   h = H(sk)
   a = 2**(b-2) + sum(2**i * bit(h,i) for i in range(3,b-2))
   r = Hint(''.join([h[i] for i in range(int(b//8),int(b//4))]) + m)
   R = scalarmult(B,r)
-  tmp =  Hint(encodepoint(R) + encodepoint(pk) + m)
-  S = (r + tmp * a) % l
-  A = pk
-  h = Hint(encodepoint(R) + encodepoint(pk) + m)
-  tmp2 = pointAddition(R ,scalarmult(A,h))
+  h =  Hint( hashPadded(encodepoint(R) , encodepoint(pk)) + m) 
+  S = (r + h * a) % l
   return R, S
 
 def decodeint(s):
   return sum(2**i * bit(s,i) for i in range(0,b))
-
 
 def decodepoint(s):
   y = sum(2**i * bit(s,i) for i in range(0,b-1))
@@ -172,12 +221,10 @@ def decodepoint(s):
   if not isoncurve(P): raise Exception("decoding point that is not on curve")
   return P
 
-
 def checkvalid(R, S,m,pk):
   A = pk
-  h = Hint(encodepoint(R) + encodepoint(pk) + m)
-  print("    internal " , scalarmult(B,S), pointAddition(R,scalarmult(A,h)))
+  h = Hint(hashPadded(encodepoint(R) , encodepoint(pk)) + m)
+
+  
   if scalarmult(B,S) != pointAddition(R,scalarmult(A,h)):
-
     raise Exception("signature does not pass verification")
-

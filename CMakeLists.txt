@@ -86,7 +86,7 @@ endif()
 
 
 add_definitions(-DDEBUG=1)
-
+add_compile_options(-fPIC)
 
 if("${CPPDEBUG}")
   add_definitions(-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)
@@ -102,6 +102,6 @@ else()
 endif()
 
 include_directories(.)
-
-add_subdirectory(depends)
-add_subdirectory(src)
+include_directories(depends/libsnark)
+add_subdirectory(depends/libsnark)
+add_subdirectory(baby_jubjub_ecc)
