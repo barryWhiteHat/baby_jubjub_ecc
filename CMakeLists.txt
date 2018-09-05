@@ -102,6 +102,6 @@ else()
 endif()
 
 include_directories(.)
-
-add_subdirectory(depends)
-add_subdirectory(src)
+include_directories(depends/libsnark)
+add_subdirectory(depends/libsnark)
+add_subdirectory(baby_jubjub_ecc)
