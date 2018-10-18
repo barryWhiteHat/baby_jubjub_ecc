@@ -34,18 +34,19 @@ base = Point(x0, y0)
 #y = Fq(1)
 #print ("lhs , rhs    : ", x*x, JUBJUB_A*(x*x) + (y*y) , Fq(1) + (JUBJUB_D * (x*x) * (y*y)))
 
+x2 = x1
+y2 = y1
+
 x1 = x0 
 y1 = y0
-x2 = x0
-y2 = y0
 
-
-
-x3 =  (x1*y2 + x1*y2) / (Fq(1) + JUBJUB_D*x1*x2*y1*y2) 
-assert( x3 == (x1*y2 + x1*y2) * (Fq(1) + JUBJUB_D*x1*x2*y1*y2).inv() )
+x3 =  (x1*y2 + y1*x2) / (Fq.ONE + JUBJUB_D*x1*x2*y1*y2) 
+assert( x3 == (x1*y2 + y1*x2) * (Fq(1) + JUBJUB_D*x1*x2*y1*y2).inv() )
 
 y3 = (y1*y2 - JUBJUB_A*x1*x2) / (Fq.ONE - JUBJUB_D*x1*x2*y1*y2)
 assert( y3 == (y1*y2 - JUBJUB_A*x1*x2) * (Fq.ONE - JUBJUB_D*x1*x2*y1*y2).inv() )
+print("out " , x3, y3)
+
 
 p3 = Point(x3, y3)
 assert(p3.is_on_curve())
