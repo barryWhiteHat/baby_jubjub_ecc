@@ -26,7 +26,7 @@ cd build
 
 
 ## Resources 
-[Lecture 16](https://www.youtube.com/watch?v=vnpZXJL6QCQ) and [Lecture 17] (https://www.youtube.com/watch?v=zTt4gvuQ6sY)
+[Lecture 16](https://www.youtube.com/watch?v=vnpZXJL6QCQ) and [Lecture 17](https://www.youtube.com/watch?v=zTt4gvuQ6sY)
 of [this](https://www.youtube.com/channel/UC1usFRN4LCMcfIV7UjHNuQg) course should help you get a good understanding of 
 the basics of what we are doing here. 
 
